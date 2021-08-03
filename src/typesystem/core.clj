@@ -89,7 +89,7 @@
         (check-return-type fun-type body)
         `(defn ~name ~arg-syms ~@body)))))
 
-(defn infer-value [form]
+(defn infer-value-type [form]
   (cond
     (number? form)
     (->ValueType 'Number)
@@ -97,10 +97,10 @@
     (string? form)
     (->ValueType 'String)))
 
-(defn infer-symbol [form]
+(defn infer-symbol-type [form]
   (get-type form))
 
-(defn infer-fun-with-args [form]
+(defn infer-fun-with-args-type [form]
   (let [fun-type (get-type (first form))
         arg-types (mapv infer-type (rest form))]
 
@@ -114,9 +114,9 @@
 
 (defn infer-type [form]
   (cond
-    (symbol? form) (infer-symbol form)
-    (list? form)   (infer-fun-with-args form)
-    :else          (infer-value form)))
+    (symbol? form) (infer-symbol-type form)
+    (list? form)   (infer-fun-with-args-type form)
+    :else          (infer-value-type form)))
 
 
 (defun flap (Number -> Number)
@@ -127,17 +127,12 @@
 
 (defun flup (Number String Number -> Number)
   [x y z]
-  (flap x))
+  x)
 
 
 (defun add-1 (Number -> Number)
   [x]
-  (+ x "fsf"))
-
-
-(defun add-1 (Number -> String)
-  [x]
-  2)
+  (+ x 3))
 
 
 #_(defmacro remove-type [sym]
